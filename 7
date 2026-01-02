@@ -1,0 +1,38 @@
+import pandas as pd
+from pgmpy.models import BayesianNetwork
+from pgmpy.estimators import MaximumLikelihoodEstimator
+from pgmpy.inference import VariableElimination
+
+data = pd.read_csv("heart.csv")
+print("Dataset:")
+print(data.head())
+
+model = BayesianNetwork([
+    ('Age', 'HeartDisease'),
+    ('BP', 'HeartDisease'),
+    ('Cholesterol', 'HeartDisease')
+]) 
+
+model.fit(data, estimator=MaximumLikelihoodEstimator)
+print("\nBayesian Network trained successfully")
+
+inference = VariableElimination(model)
+
+patient_data = {
+    'Age': 55,
+    'BP': 140,
+    'Cholesterol': 240
+}
+
+result = inference.query(
+    variables=['HeartDisease'], 
+    evidence=patient_data
+)
+
+print("\nDiagnosis Result:")
+print(result)
+
+if result.values[1] > result.values[0]:
+    print("Prediction: Patient HAS Heart Disease")
+else:
+    print("Prediction: Patient does NOT have Heart Disease")
