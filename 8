@@ -1,0 +1,30 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+def local_weighted_regression(x, y, tau=0.5):
+    y_pred = np.zeros(len(x))
+
+    for i in range(len(x)):
+        weights = np.exp(-(x - x[i])**2 / (2 * tau**2))
+        W = np.diag(weights)
+        X_mat = np.column_stack([np.ones(len(x)), x])
+        theta = np.linalg.inv(X_mat.T @ W @ X_mat) @ (X_mat.T @ W @ y)
+        y_pred[i] = theta[0] + theta[1] * x[i]
+
+    return y_pred
+
+np.random.seed(42)
+x = np.linspace(0, 10, 100)
+y = np.sin(x) + np.random.normal(0, 0.1, 100)
+
+y_pred = local_weighted_regression(x, y, tau=0.5)
+
+plt.figure(figsize=(10, 6))
+plt.scatter(x, y, alpha=0.5, label='Data points')
+plt.plot(x, y_pred, color='red', linewidth=2, label='LWR Fit')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title('Locally Weighted Regression')
+plt.legend()
+plt.show()
