@@ -1,0 +1,51 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+from sklearn.tree import plot_tree
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("diabetes.csv")
+print("Dataset:")
+print(df.head())
+
+cols = df.columns.to_list()
+target = cols[-1]
+X = df[cols[:-1]]
+y = df[target]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+model = DecisionTreeClassifier(criterion='entropy')
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+print("Accuracy:", accuracy_score(y_test, y_pred))
+
+plt.figure(figsize=(20, 10))
+plot_tree(
+    model,
+    feature_names=X.columns,
+    class_names=["No Diabetes", "Diabetes"],
+    filled=True
+)
+plt.title("Decision Tree using ID3 Algorithm (Diabetes Dataset)")
+plt.show()
+
+new_sample = {
+    'Pregnancies': 2,
+    'Glucose': 130,
+    'BloodPressure': 70,
+    'BMI': 28.5,
+    'Age': 35
+}
+
+new_df = pd.DataFrame([new_sample])
+prediction = model.predict(new_df)
+
+if prediction[0] == 1:
+    print("Prediction: Patient HAS Diabetes")
+else:
+    print("Prediction: Patient does NOT have Diabetes")
