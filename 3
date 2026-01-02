@@ -1,0 +1,45 @@
+import pandas as pd
+
+data = pd.read_csv("data.csv")
+n = len(data.columns) - 1
+
+S = ['0'] * n
+G = [['?'] * n]
+
+for i in range(len(data)):
+    instance = list(data.iloc[i, :-1])
+    label = data.iloc[i, -1]
+
+    if label == 'yes':
+        for j in range(n):
+            if S[j] == '0':
+                S[j] = instance[j]
+            elif S[j] != instance[j]:
+                S[j] = '?'
+
+        new_G = []
+        for g in G:
+            valid = True
+            for k in range(n):
+                if g[k] != '?' and g[k] != instance[k]:
+                    valid = False
+                    break
+            if valid:
+                new_G.append(g)
+        G = new_G
+
+    else:
+        new_G = []
+        for g in G:
+            for j in range(n):
+                if g[j] == '?' and S[j] != instance[j]:
+                    temp = g.copy()
+                    temp[j] = S[j]
+                    new_G.append(temp)
+        G = new_G
+
+print("Final Specific Hypothesis (S):")
+print(S)
+print("\nFinal General Hypotheses (G):")
+for g in G:
+    print(g)
