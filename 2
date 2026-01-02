@@ -1,0 +1,27 @@
+import pandas as pd
+
+df = pd.read_csv("yourfile.csv")
+print("Training Data:")
+print(df)
+
+columns = df.columns.to_list()
+target_col = columns[-1]
+attr_cols = columns[:-1]
+
+hypothesis = ['0'] * len(attr_cols)
+print("\nInitial Hypothesis:", hypothesis)
+
+for i in range(len(df)):
+    if df.iloc[i][target_col] == "Yes":
+        for j in range(len(attr_cols)):
+            value = df.iloc[i][attr_cols[j]]
+
+            if hypothesis[j] == '0':
+                hypothesis[j] = value
+            elif hypothesis[j] != value:
+                hypothesis[j] = '?'
+
+        print(f"After example {i+1}: {hypothesis}")
+
+print("\nFinal Most Specific Hypothesis:")
+print(hypothesis)
