@@ -1,0 +1,23 @@
+import pandas as pd
+
+data = pd.read_csv("enjoysport.csv")
+X = data.iloc[:, :-1]
+y = data.iloc[:, -1]
+
+P_yes = (y == "Yes").mean()
+P_no = (y == "No").mean()
+
+test = {"Outlook": "Sunny", "Temperature": "Cool",
+        "Humidity": "Normal", "Wind": "Weak"}
+
+score_yes, score_no = P_yes, P_no
+
+for feature, value in test.items():
+    yes_count = ((X[feature] == value) & (y == "Yes")).sum()
+    no_count = ((X[feature] == value) & (y == "No")).sum()
+    score_yes *= yes_count / (y == "Yes").sum()
+    score_no *= no_count / (y == "No").sum()
+
+print(f"YES Score: {score_yes:.6f}")
+print(f"NO Score: {score_no:.6f}")
+print(f"\nPrediction: {'YES' if score_yes > score_no else 'NO'}")
